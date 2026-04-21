@@ -8,4 +8,14 @@ export default defineConfig({
   react(),
   tailwindcss()
   ],
+  build: {
+    rollupOptions: {
+      output: {
+        // Separa Phaser en su propio chunk para mejor caching
+        manualChunks: {
+          phaser: ['phaser'],
+        },
+      },
+    },
+  },
 })
