@@ -12,8 +12,8 @@ export default defineConfig({
     rollupOptions: {
       output: {
         // Separa Phaser en su propio chunk para mejor caching
-        manualChunks: {
-          phaser: ['phaser'],
+        manualChunks: (id: string) => {
+          if (id.includes('/node_modules/phaser')) return 'phaser';
         },
       },
     },
