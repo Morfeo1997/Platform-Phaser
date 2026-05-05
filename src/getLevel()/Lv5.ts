@@ -23,7 +23,7 @@ const Lv5: LevelData = {
   // Estrella al tope-centro exacto — obliga a cruzar toda la pantalla
   goalPosition: { x: 0.50, y: 0.08 },
 
-  nextLevel: undefined, // fin del juego
+  nextLevel: 6,
 
   // Layout caótico: sin patrón claro, múltiples rutas posibles,
   // ninguna completamente segura. Plataformas muy angostas (60–90px).
