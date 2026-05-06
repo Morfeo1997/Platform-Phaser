@@ -2,9 +2,9 @@ import { Scene, Physics, GameObjects, Math as PMath } from 'phaser';
 import { Player }      from '../entities/Player';
 import { SlimeEnemy }  from '../entities/Enemy';
 import { BatEnemy }    from '../entities/BatEnemy';
-import { StarGoal }    from '../entities/StarGoal';
-import { getLevel }    from '../data/levels/index';
-import type { LevelData } from '../data/levels/index';
+import { StarGoal }    from '../entities/Stargoal';
+import { getLevel }    from '../data/Levels/Index';
+import type { LevelData } from '../data/Levels/Index';
 
 // ─── Tipos ────────────────────────────────────────────────────────────────
 interface GameSceneData { level?: number }

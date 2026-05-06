@@ -1,6 +1,6 @@
 import { Scene, GameObjects, Math as PMath } from 'phaser';
-import { PALETTE } from './MenuScene';
-import { getLevel, LEVEL_IDS } from '../data/levels/index';
+import { PALETTE } from './transitions/MenuScene';
+import { getLevel, LEVEL_IDS } from '../data/Levels/Index';
 
 // ─── Configuración visual por nivel ───────────────────────────────────────
 // Solo lo que NO está en LevelData: color de tarjeta y estado unlocked.
