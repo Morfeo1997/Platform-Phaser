@@ -124,7 +124,6 @@ export class LevelSelectScene extends Scene {
     const startY  = 70 + (height - 70 - 180 - totalH) / 2 + cardH / 2;
 
     levels.forEach((level, i) => {
-    LEVELS.forEach((level, i) => {
       const col = i % cols;
       const row = Math.floor(i / cols);
       const x   = startX + col * (cardW + gapX);

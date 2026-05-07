@@ -90,8 +90,7 @@ export class MenuScene extends Scene {
       fontFamily: '"Press Start 2P", monospace',
       fontSize:   '36px',
       color:      '#000000',
-      alpha:      0.5,
-    }).setOrigin(0.5, 0);
+    }).setOrigin(0.5, 0).setAlpha(0.5);
 
     // Título principal
     this.titleText = this.add.text(cx, 80, 'PIXEL QUEST', {
