@@ -4,14 +4,14 @@
 //   2. Importalo acá y agregalo al objeto LEVELS
 //   3. Actualizá nextLevel en el nivel anterior
 
-import Lv1 from './Lv1';
-import Lv2 from './Lv2';
-import Lv3 from './Lv3';
-import Lv4 from './Lv4';
-import Lv5 from './Lv5';
-import Lv6 from './Lv6';
-import Lv7 from './Lv7';
-import Lv8 from './Lv8';
+import Lv1 from '../../getLevel()/Lv1';
+import Lv2 from '../../getLevel()/Lv2';
+import Lv3 from '../../getLevel()/Lv3';
+import Lv4 from '../../getLevel()/Lv4';
+import Lv5 from '../../getLevel()/Lv5';
+import Lv6 from '../../getLevel()/Lv6';
+import Lv7 from '../../getLevel()/Lv7';
+import Lv8 from '../../getLevel()/Lv8';
 import type { LevelData } from './LevelData';
 
 export type { LevelData, PlatformDef, EnemySpawn, EnemyType, BackgroundEffect } from './LevelData';

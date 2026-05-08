@@ -1,4 +1,4 @@
-import PlatformerGame from './PlatformerGame';
+import PlatformerGame from './Game';
 
 export default function App() {
   return (
