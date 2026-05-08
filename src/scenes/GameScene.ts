@@ -26,6 +26,10 @@ export class GameScene extends Scene {
   private paused        = false;
   private playerInvincible = false;
 
+  // Dimensiones del mundo (pueden ser mayores que el canvas si el nivel lo define)
+  private worldW = 800;
+  private worldH = 500;
+
   private hudScore!: GameObjects.Text;
   private hudLives!: GameObjects.Text;
   private hudJumps!: GameObjects.Text;
@@ -52,17 +56,21 @@ export class GameScene extends Scene {
     this.levelData = getLevel(this.currentLevel);
     const { width, height } = this.scale;
 
+    // Tamaño del mundo — usa worldSize del nivel o el canvas como fallback
+    this.worldW = this.levelData.worldSize?.w ?? width;
+    this.worldH = this.levelData.worldSize?.h ?? height;
+
     this.createBackground(width, height);
     this.generatePlatformTextures(width);
     this.createPlatforms(width, height);
 
-    const px = this.levelData.playerSpawn.x * width;
-    const py = this.levelData.playerSpawn.y * height;
+    const px = this.levelData.playerSpawn.x * this.worldW;
+    const py = this.levelData.playerSpawn.y * this.worldH;
     this.player = new Player(this, px, py);
 
     // Estrella de victoria
-    const gx = this.levelData.goalPosition.x * width;
-    const gy = this.levelData.goalPosition.y * height;
+    const gx = this.levelData.goalPosition.x * this.worldW;
+    const gy = this.levelData.goalPosition.y * this.worldH;
     this.star = new StarGoal(this, gx, gy, () => this.triggerVictory());
 
     this.enemyGroup = this.physics.add.group();
@@ -70,6 +78,23 @@ export class GameScene extends Scene {
     this.setupColliders();
     this.createHUD(width);
     this.createMenuButton(width);
+
+    // ── Física y cámara ──────────────────────────────────────────────────────
+    // El mundo de física debe coincidir con el tamaño del nivel
+    this.physics.world.setBounds(0, 0, this.worldW, this.worldH);
+    this.player.sprite.setCollideWorldBounds(true);
+
+    // Limita el scroll al tamaño del mundo y sigue al jugador suavemente.
+    // Si el mundo == canvas, setBounds lo deja fijo sin scroll.
+    this.cameras.main.setBounds(0, 0, this.worldW, this.worldH);
+    this.cameras.main.startFollow(
+      this.player.sprite,
+      true,   // roundPixels — evita blurriness en pixel-art
+      0.08,   // lerpX — suavizado horizontal (0=rígido, 1=instantáneo)
+      0.08,   // lerpY — suavizado vertical
+    );
+    // Offset vertical: muestra un poco más de lo que hay debajo del jugador
+    this.cameras.main.setFollowOffset(0, 60);
 
     this.cameras.main.fadeIn(400, 0, 0, 0);
   }
@@ -88,15 +113,16 @@ export class GameScene extends Scene {
   // BACKGROUND — lee backgroundEffect desde LevelData, sin ifs por nivel
   // ─────────────────────────────────────────────────────────────────────────
 
-  private createBackground(width: number, height: number) {
+  private createBackground(_width: number, _height: number) {
     const [c1, c2, c3, c4] = this.levelData.bgColors;
     const bg = this.add.graphics();
     bg.fillGradientStyle(c1, c2, c3, c4, 1);
-    bg.fillRect(0, 0, width, height);
+    // El fondo cubre todo el mundo, no solo el canvas
+    bg.fillRect(0, 0, this.worldW, this.worldH);
 
     switch (this.levelData.backgroundEffect) {
-      case 'stars': this.fxStars(bg, width, height); break;
-      case 'lava':  this.fxLava(width, height);       break;
+      case 'stars': this.fxStars(bg, this.worldW, this.worldH); break;
+      case 'lava':  this.fxLava(this.worldW, this.worldH);       break;
     }
   }
 
@@ -151,14 +177,15 @@ export class GameScene extends Scene {
   // PLATAFORMAS
   // ─────────────────────────────────────────────────────────────────────────
 
-  private generatePlatformTextures(width: number) {
+  private generatePlatformTextures(_width: number) {
     const { id, groundTop, groundBody, platformTop, platformBody } = this.levelData;
 
+    // La textura del suelo usa el ancho del MUNDO, no del canvas
     if (!this.textures.exists(`ground_l${id}`)) {
       const g = this.add.graphics();
-      g.fillStyle(groundTop, 1);  g.fillRect(0, 0, width, 4);
-      g.fillStyle(groundBody, 1); g.fillRect(0, 4, width, 36);
-      g.generateTexture(`ground_l${id}`, width, 40);
+      g.fillStyle(groundTop, 1);  g.fillRect(0, 0, this.worldW, 4);
+      g.fillStyle(groundBody, 1); g.fillRect(0, 4, this.worldW, 36);
+      g.generateTexture(`ground_l${id}`, this.worldW, 40);
       g.destroy();
     }
 
@@ -171,16 +198,18 @@ export class GameScene extends Scene {
     }
   }
 
-  private createPlatforms(width: number, height: number) {
+  private createPlatforms(_width: number, _height: number) {
     this.platforms = this.physics.add.staticGroup();
     const { id, platformTop, platformBody } = this.levelData;
 
-    const ground = this.platforms.create(width / 2, height - 20, `ground_l${id}`) as Physics.Arcade.Sprite;
+    // El suelo se extiende por todo el ancho del mundo
+    const ground = this.platforms.create(this.worldW / 2, this.worldH - 20, `ground_l${id}`) as Physics.Arcade.Sprite;
     ground.setImmovable(true).refreshBody();
 
     for (const def of this.levelData.platforms) {
-      const x  = def.absolute ? def.x : def.x * width;
-      const y  = def.absolute ? def.y : def.y * height;
+      // Las fracciones se calculan sobre worldW/worldH, no sobre el canvas
+      const x  = def.absolute ? def.x : def.x * this.worldW;
+      const y  = def.absolute ? def.y : def.y * this.worldH;
       const pw = def.width ?? 140;
 
       let texKey = `platform_l${id}`;
@@ -204,10 +233,10 @@ export class GameScene extends Scene {
   // ENEMIGOS
   // ─────────────────────────────────────────────────────────────────────────
 
-  private spawnEnemies(width: number, height: number) {
+  private spawnEnemies(_width: number, _height: number) {
     for (const spawn of this.levelData.enemies) {
-      const x = spawn.x * width;
-      const y = spawn.y * height;
+      const x = spawn.x * this.worldW;
+      const y = spawn.y * this.worldH;
 
       switch (spawn.type) {
         case 'slime': {

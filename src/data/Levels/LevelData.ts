@@ -42,4 +42,9 @@ export interface LevelData {
   goalPosition: { x: number; y: number };
   /** ID del siguiente nivel (undefined = último nivel) */
   nextLevel?:   number;
+  /**
+   * Tamaño del mundo en píxeles. Si se omite, el mundo es igual al canvas (800×500)
+   * y la cámara no se mueve. Definilo cuando el nivel sea más grande que la pantalla.
+   */
+  worldSize?:   { w: number; h: number };
 }

@@ -1,4 +1,4 @@
-import type { LevelData } from './LevelData';
+import type { LevelData } from '../data/Levels/LevelData';
 
 // ─── Nivel 2: Zona Volcánica ──────────────────────────────────────────────
 // Plataformas más angostas y separadas — exigen doble salto.
@@ -22,7 +22,10 @@ const Lv2: LevelData = {
   // Estrella en la cima — hay que superar a los bats para llegar
   goalPosition: { x: 0.62, y: 0.19 },
 
-  nextLevel: undefined, // último nivel por ahora
+  nextLevel: 3, // ← actualizado
+
+  // Mundo más ancho que el canvas → la cámara scrollea horizontalmente
+  worldSize: { w: 1600, h: 900 },
 
   platforms: [
     { x: 0.25, y: 0.76, width: 120 },

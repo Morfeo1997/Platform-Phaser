@@ -1,4 +1,4 @@
-import type { LevelData } from './LevelData';
+import type { LevelData } from '../data/Levels/LevelData';
 
 // ─── Nivel 3: El Abismo ───────────────────────────────────────────────────
 // Plataformas en zigzag con gaps amplios — el doble salto es obligatorio.
@@ -24,6 +24,8 @@ const Lv3: LevelData = {
   goalPosition: { x: 0.50, y: 0.10 },
 
   nextLevel: 4,
+
+  worldSize: { w: 1600, h: 1000 },
 
   // Layout en zigzag: izquierda-derecha alternado, gaps deliberadamente amplios
   // para forzar el doble salto en cada transición
