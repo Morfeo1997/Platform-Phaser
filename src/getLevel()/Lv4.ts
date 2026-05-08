@@ -1,4 +1,4 @@
-import type { LevelData } from './LevelData';
+import type { LevelData } from '../data/Levels/LevelData';
 
 // ─── Nivel 4: Bosque Cristalino ───────────────────────────────────────────
 // Plataformas en escalera doble: sube por la derecha, baja por la izquierda.
@@ -23,6 +23,9 @@ const Lv4: LevelData = {
   goalPosition: { x: 0.88, y: 0.10 },
 
   nextLevel: 5,
+
+  // Escalera de izq→der — mundo ancho para que cada peldaño tenga espacio real
+  worldSize: { w: 1800, h: 900 },
 
   // Escalera ascendente de izquierda a derecha, luego plataformas de retorno
   // más altas — el layout recompensa explorar toda la pantalla

@@ -1,4 +1,4 @@
-import type { LevelData } from './LevelData';
+import type { LevelData } from '../data/Levels/LevelData';
 
 // ─── Nivel 7: Ruinas Antiguas ─────────────────────────────────────────────
 // Layout asimétrico que simula una estructura derrumbada.
@@ -25,6 +25,9 @@ const Lv7: LevelData = {
   goalPosition: { x: 0.50, y: 0.11 },
 
   nextLevel: 8,
+
+  // Dos rutas paralelas — mundo ancho para que ambas vías tengan espacio independiente
+  worldSize: { w: 1900, h: 1000 },
 
   platforms: [
     // ── Ruta derecha (más ancha, más visibles, más enemigos) ──────────────

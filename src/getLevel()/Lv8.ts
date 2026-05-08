@@ -1,4 +1,4 @@
-import type { LevelData } from './LevelData';
+import type { LevelData } from '../data/Levels/LevelData';
 
 // ─── Nivel 8: El Santuario ────────────────────────────────────────────────
 // El nivel final del juego. Layout en espiral: las plataformas descienden
@@ -30,6 +30,9 @@ const Lv8: LevelData = {
   goalPosition: { x: 0.50, y: 0.12 },
 
   nextLevel: undefined, // fin del juego
+
+  // Nivel final — el mundo más grande del juego, la espiral necesita todo el espacio
+  worldSize: { w: 2200, h: 1300 },
 
   platforms: [
     // ── Arco izquierdo (sube desde el suelo hacia el centro) ──────────────

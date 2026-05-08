@@ -1,4 +1,4 @@
-import type { LevelData } from './LevelData';
+import type { LevelData } from '../data/Levels/LevelData';
 
 // ─── Nivel 5: La Cumbre Final ─────────────────────────────────────────────
 // El nivel más difícil. Plataformas muy angostas y disposición caótica.
@@ -24,6 +24,9 @@ const Lv5: LevelData = {
   goalPosition: { x: 0.50, y: 0.08 },
 
   nextLevel: 6,
+
+  // Layout caótico con 16 plataformas — mundo grande en ambas dimensiones
+  worldSize: { w: 2000, h: 1100 },
 
   // Layout caótico: sin patrón claro, múltiples rutas posibles,
   // ninguna completamente segura. Plataformas muy angostas (60–90px).

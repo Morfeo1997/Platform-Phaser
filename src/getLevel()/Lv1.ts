@@ -1,4 +1,4 @@
-import type { LevelData } from './LevelData';
+import type { LevelData } from '../data/Levels/LevelData';
 
 // ─── Nivel 1: Las Alturas ─────────────────────────────────────────────────
 // Introducción suave — sin enemigos, plataformas amplias.
@@ -22,6 +22,9 @@ const Lv1: LevelData = {
   goalPosition: { x: 0.75, y: 0.14 },
 
   nextLevel: 2,
+
+  // Mundo ligeramente más grande que el canvas — introduce el scroll sin abrumar
+  worldSize: { w: 1200, h: 750 },
 
   platforms: [
     { x: 0.19, y: 0.68, width: 200 },

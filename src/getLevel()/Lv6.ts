@@ -1,4 +1,4 @@
-import type { LevelData } from './LevelData';
+import type { LevelData } from '../data/Levels/LevelData';
 
 // ─── Nivel 6: Torres de Hielo ─────────────────────────────────────────────
 // El mapa está dividido en 3 torres verticales de plataformas agrupadas.
@@ -25,6 +25,9 @@ const Lv6: LevelData = {
   goalPosition: { x: 0.87, y: 0.10 },
 
   nextLevel: 7,
+
+  // Torres verticales — la altura es la dimensión crítica, ancho moderado
+  worldSize: { w: 1600, h: 1200 },
 
   platforms: [
     // ── Torre izquierda (x ≈ 0.12–0.22) ─────────────────────────────────
