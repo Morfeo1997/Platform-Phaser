@@ -146,9 +146,12 @@ export class Player {
 
   private syncAttackHitbox() {
     if (!this.isAttacking) return;
-    const ox = this.facingRight ? 44 : -44;
+    // El slash barre un arco adelante del jugador.
+    // Hitbox: ancho moderado, alto para cubrir el arco vertical del corte.
+    const ox = this.facingRight ? 48 : -48;
     const nx = this.sprite.x + ox;
     const ny = this.sprite.y;
+    this.attackHitbox.setSize(52, 70);
     this.attackHitbox.setPosition(nx, ny);
     (this.attackHitbox.body as Physics.Arcade.StaticBody).reset(nx, ny);
   }
@@ -193,34 +196,79 @@ export class Player {
   }
 
   private fxAttack() {
-    const cx = this.sprite.x + (this.facingRight ? 50 : -50);
-    const cy = this.sprite.y;
-    const g  = this.scene.add.graphics();
-    g.fillStyle(0xffdd00, 0.9);
+    const dir   = this.facingRight ? 1 : -1;
+    const originX = this.sprite.x + dir * 20; // base del slash, pegado al cuerpo
+    const originY = this.sprite.y;
 
-    for (let i = 0; i < 5; i++) {
-      const a0 = (i * 2 * Math.PI) / 5 - Math.PI / 2;
-      const a1 = ((i + 0.5) * 2 * Math.PI) / 5 - Math.PI / 2;
-      const a2 = ((i + 1) * 2 * Math.PI) / 5 - Math.PI / 2;
-      g.fillTriangle(
-        cx, cy,
-        cx + Math.cos(a0) * 22, cy + Math.sin(a0) * 22,
-        cx + Math.cos(a1) * 10, cy + Math.sin(a1) * 10,
-      );
-      g.fillTriangle(
-        cx, cy,
-        cx + Math.cos(a1) * 10, cy + Math.sin(a1) * 10,
-        cx + Math.cos(a2) * 22, cy + Math.sin(a2) * 22,
-      );
-    }
+    // ── Slash: 3 arcos superpuestos en distintos colores / tamaños ──────────
+    // Cada arco es un abanico de triángulos que describe un corte diagonal.
+    // El arco barre desde arriba-adelante hacia abajo-adelante según la dirección.
+    const slashDefs = [
+      { radius: 55, width: 22, color: 0xffffff, alpha: 1.0 },  // corte exterior — blanco
+      { radius: 42, width: 18, color: 0x88eeff, alpha: 0.85 }, // corte medio — cyan claro
+      { radius: 28, width: 14, color: 0x00ccff, alpha: 0.7 },  // corte interior — cyan
+    ];
 
-    this.scene.tweens.add({
-      targets: g, alpha: 0, scaleX: 1.5, scaleY: 1.5,
-      duration: PLAYER_CONFIG.attackDuration * 0.8,
-      ease: 'Power2',
-      onComplete: () => g.destroy(),
+    // Ángulo de barrido: el slash va de -100° a +20° (mirando a la derecha),
+    // espejado si mira a la izquierda.
+    const startAngle = dir === 1 ? -1.75 : -1.40; // radianes
+    const endAngle   = dir === 1 ?  0.35 : Math.PI + 0.35;
+    const steps      = 6; // triángulos que forman el abanico
+
+    slashDefs.forEach(({ radius, width, color, alpha }, layerIdx) => {
+      const g = this.scene.add.graphics();
+      g.fillStyle(color, alpha);
+
+      for (let i = 0; i < steps; i++) {
+        const t0 = i / steps;
+        const t1 = (i + 1) / steps;
+        const a0 = startAngle + t0 * (endAngle - startAngle);
+        const a1 = startAngle + t1 * (endAngle - startAngle);
+
+        // Triángulo exterior (punta del corte)
+        g.fillTriangle(
+          originX + Math.cos(a0) * (radius - width / 2),
+          originY + Math.sin(a0) * (radius - width / 2),
+          originX + Math.cos(a0) * (radius + width / 2),
+          originY + Math.sin(a0) * (radius + width / 2),
+          originX + Math.cos(a1) * (radius + width / 2),
+          originY + Math.sin(a1) * (radius + width / 2),
+        );
+        // Triángulo interior (cierra el abanico)
+        g.fillTriangle(
+          originX + Math.cos(a0) * (radius - width / 2),
+          originY + Math.sin(a0) * (radius - width / 2),
+          originX + Math.cos(a1) * (radius + width / 2),
+          originY + Math.sin(a1) * (radius + width / 2),
+          originX + Math.cos(a1) * (radius - width / 2),
+          originY + Math.sin(a1) * (radius - width / 2),
+        );
+      }
+
+      // Cada capa se mueve ligeramente en la dirección del corte y desvanece
+      this.scene.tweens.add({
+        targets:  g,
+        x:        dir * (14 + layerIdx * 4), // las capas interiores se mueven menos
+        alpha:    0,
+        duration: PLAYER_CONFIG.attackDuration * 0.65,
+        delay:    layerIdx * 18,             // escalonado: exterior primero
+        ease:     'Power2',
+        onComplete: () => g.destroy(),
+      });
     });
-    this.scene.cameras.main.shake(80, 0.004);
+
+    // ── Destello en el origen del corte ──────────────────────────────────────
+    const flash = this.scene.add.graphics();
+    flash.fillStyle(0xffffff, 0.9);
+    flash.fillCircle(originX, originY, 6);
+    this.scene.tweens.add({
+      targets: flash, alpha: 0, scaleX: 2.5, scaleY: 2.5,
+      duration: 120, ease: 'Power2',
+      onComplete: () => flash.destroy(),
+    });
+
+    // ── Shake de cámara más corto que el de la estrella (el slash es más ágil)
+    this.scene.cameras.main.shake(50, 0.003);
   }
 
   // ─────────────────────────────────────────────────────────────────────────
